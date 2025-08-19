@@ -14,13 +14,17 @@ export const useGameStore = defineStore('game', {
     matterSpeed: new Decimal(0.1),
     antimatterSpeed: new Decimal(0.2),
 
+    timerDuration: new Decimal(5),
+
     treeState: getTreesState(),
 
     currentCategory: { matter: 1, antimatter: 1 },
 
     prestigeBonus: new Decimal(1),
 
-    balanceMass: new Decimal(1),
+    balanceMass: new Decimal(0.5),
+
+    isGameOver: false,
   }),
 
   actions: {

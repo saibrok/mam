@@ -67,6 +67,22 @@ watch(
   },
 );
 
+watch(
+  () => store.isGameOver,
+  (isGameOver) => {
+    if (isGameOver) {
+      if (rafId) cancelAnimationFrame(rafId);
+      if (intervalId) clearInterval(intervalId);
+    } else {
+      if (settings.useRAF) {
+        rafId = requestAnimationFrame(gameLoop);
+      } else {
+        intervalId = setInterval(gameLoop, settings.updateInterval);
+      }
+    }
+  },
+);
+
 onMounted(() => {
   lastUpdate = Date.now();
   if (settings.useRAF) {
