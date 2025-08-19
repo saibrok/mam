@@ -14,7 +14,7 @@
         class="timeline-item"
         :class="{
           unlocked: category.unlocked,
-          current: index === store.currentTabIndex,
+          current: index === (title === 'antimatter' ? store.currentCategory.antimatter : store.currentCategory.matter),
           completed: isCompleted(category),
         }"
       >
@@ -83,7 +83,6 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
 import { useGameStore } from '../stores/gameStore.js';
 import { formatNumber } from '../utils/formatNumber.js';
 

@@ -2,9 +2,10 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useGameStore } from './stores/gameStore.js';
 
-import GameHeader from './components/GameHeader.vue';
-
 import MatterTree from './components/MatterTree.vue';
+
+import GameHeader from './components/GameHeader.vue';
+import CurrentCategory from './components/CurrentCategory.vue';
 
 import LanguageSwitcher from './components/LanguageSwitcher.vue';
 
@@ -27,6 +28,14 @@ let lastUpdate = Date.now();
 let accumulatedTime = 0;
 let intervalId = null;
 let rafId = null;
+
+const currentMatterCategory = computed(() => {
+  return store.currentCategory.matter;
+});
+
+const currentAntimatterCategory = computed(() => {
+  return store.currentCategory.antimatter;
+});
 
 const gameLoop = () => {
   const now = Date.now();
@@ -94,6 +103,18 @@ onUnmounted(() => {
 
     <div class="main-content">
       <GameHeader />
+
+      <div class="category-container">
+        <CurrentCategory
+          :tree="matterTree"
+          :currentCategory="currentMatterCategory"
+        />
+
+        <CurrentCategory
+          :tree="matterTree"
+          :currentCategory="currentAntimatterCategory"
+        />
+      </div>
     </div>
 
     <MatterTree
@@ -124,6 +145,8 @@ onUnmounted(() => {
 
 .main-content {
   width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 select {
@@ -148,5 +171,18 @@ select {
   border: 1px solid #3d3d5c;
   background: #2d2d42;
   color: #e0e0e0;
+}
+
+.category-container {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+}
+
+.current-category {
+  flex-grow: 1;
+  &:last-child {
+    border-left: #1e1e2f 10px solid;
+  }
 }
 </style>

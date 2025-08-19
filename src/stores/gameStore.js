@@ -1,28 +1,31 @@
 import { defineStore } from 'pinia';
 import { Decimal } from '../utils/formatNumber.js';
 
-import { 
-  getTreesState,
-} from './modules/treeModule.js';
+import { getTreesState } from './modules/treeModule.js';
 
-import { energyActions } from './modules/energyModule.js';
+import { resourcesActions } from './modules/resourcesModule.js';
 
 export const useGameStore = defineStore('game', {
   state: () => ({
-    energy: new Decimal(1),
-    matter: new Decimal(100),
-    antimatter: new Decimal(115),
+    energy: new Decimal(0),
+    matter: new Decimal(0),
+    antimatter: new Decimal(0),
+
+    matterSpeed: new Decimal(0.09),
+    antimatterSpeed: new Decimal(0.08),
+
+    treeState: getTreesState(),
+
+    currentCategory: { matter: 0, antimatter: 1 },
 
     prestigeBonus: new Decimal(1),
-    currentCategoryEnergySpeed: new Decimal(0.01),
-    treeState: getTreesState(),
   }),
 
   actions: {
-    ...energyActions,
+    ...resourcesActions,
 
     tick(deltaTime) {
-      this.generateEnergy(deltaTime);
+      this.generateResources(deltaTime);
     },
   },
 });

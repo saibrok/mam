@@ -11,24 +11,35 @@
         </div>
       </div>
 
-      <!-- Слайдер баланса материи и антиматерии -->
+      <!-- Слайдер баланса массы -->
       <div class="balance-slider-container">
         <div class="balance-label">
-          {{ $t('matter') }}: {{ formatNumber(store.matter) }} /
-          {{ $t('antimatter') }}: {{ formatNumber(store.antimatter) }}
+          {{ $t('matter') }}: {{ formatEnergy(store.matter) }} / {{ $t('antimatter') }}:
+          {{ formatEnergy(store.antimatter) }}
         </div>
         <div class="balance-slider">
           <div class="slider-track"></div>
-          <div class="slider-range"></div>
-          <div class="slider-marker" style="left: 45%"></div>
-          <div class="slider-marker" style="left: 55%"></div>
+          <!-- Левая риска -->
+          <div
+            class="slider-marker"
+            :style="{ left: leftLimit + '%' }"
+          ></div>
+          <!-- Правая риска -->
+          <div
+            class="slider-marker"
+            :style="{ left: rightLimit + '%' }"
+          ></div>
+          <!-- Бегунок -->
           <div
             class="slider-thumb"
-            :style="{ left: (matterRatio * 100) + '%' }"
+            :style="{ left: matterRatio * 100 + '%' }"
           ></div>
         </div>
-        <div class="balance-hint" :class="{ warning: !isBalanced }">
-          Баланс должен быть в пределах 10% (от 45% до 55% материи)!
+        <div
+          class="balance-hint"
+          :class="{ warning: !isBalanced }"
+        >
+          Баланс массы: разница не должна превышать {{ balanceMass }}!
         </div>
       </div>
       <!-- ...existing code... -->
@@ -43,16 +54,23 @@ import { useGameStore } from '../stores/gameStore.js';
 
 const store = useGameStore();
 
-const total = computed(() => store.matter.plus(store.antimatter));
-const matterRatio = computed(() =>
-  total.value.gt(0) ? store.matter.div(total.value).toNumber() : 0.5
+const balanceMass = 1;
+
+const matterValue = computed(() => store.matter.toNumber());
+const antimatterValue = computed(() => store.antimatter.toNumber());
+
+const total = computed(() => matterValue.value + antimatterValue.value);
+
+const matterRatio = computed(() => (total.value > 0 ? matterValue.value / total.value : 0.5));
+
+const balanceDiff = computed(() => Math.abs(matterValue.value - antimatterValue.value));
+const isBalanced = computed(() => balanceDiff.value <= balanceMass);
+
+const leftLimit = computed(() =>
+  total.value > 0 ? (Math.max(0, total.value / 2 - balanceMass) / total.value) * 100 : 0,
 );
-
-const minBalance = 0.45;
-const maxBalance = 0.55;
-
-const isBalanced = computed(() =>
-  matterRatio.value >= minBalance && matterRatio.value <= maxBalance
+const rightLimit = computed(() =>
+  total.value > 0 ? (Math.min(total.value, total.value / 2 + balanceMass) / total.value) * 100 : 100,
 );
 </script>
 
