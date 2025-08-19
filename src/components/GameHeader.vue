@@ -7,15 +7,15 @@
       <div class="energy-display">
         <div class="energy-text">⚡ {{ $t('energy') }}:</div>
         <div class="energy-count">
-          {{ formatEnergy(store.energy) }}
+          {{ formatNumber(store.energy) }}
         </div>
       </div>
 
       <!-- Слайдер баланса массы -->
       <div class="balance-slider-container">
         <div class="balance-label">
-          {{ $t('matter') }}: {{ formatEnergy(store.matter) }} / {{ $t('antimatter') }}:
-          {{ formatEnergy(store.antimatter) }}
+          {{ $t('matter') }}: {{ formatNumber(store.matter) }} / {{ $t('antimatter') }}:
+          {{ formatNumber(store.antimatter) }}
         </div>
         <div class="balance-slider">
           <div class="slider-track"></div>
@@ -40,6 +40,8 @@
           :class="{ warning: !isBalanced }"
         >
           Баланс массы: разница не должна превышать {{ balanceMass }}!
+          <br />
+          Текущее отклонение: {{ formatNumber(balanceDiff) }}
         </div>
       </div>
       <!-- ...existing code... -->
@@ -49,28 +51,32 @@
 
 <script setup>
 import { computed } from 'vue';
-import { formatEnergy, formatNumber } from '../utils/formatNumber.js';
+import { Decimal, formatNumber } from '../utils/formatNumber.js';
 import { useGameStore } from '../stores/gameStore.js';
 
 const store = useGameStore();
 
-const balanceMass = 1;
+const balanceMass = new Decimal(1);
 
-const matterValue = computed(() => store.matter.toNumber());
-const antimatterValue = computed(() => store.antimatter.toNumber());
+const matterValue = computed(() => store.matter);
+const antimatterValue = computed(() => store.antimatter);
 
-const total = computed(() => matterValue.value + antimatterValue.value);
+const total = computed(() => matterValue.value.plus(antimatterValue.value));
 
-const matterRatio = computed(() => (total.value > 0 ? matterValue.value / total.value : 0.5));
+const matterRatio = computed(() => (total.value.gt(0) ? matterValue.value.div(total.value).toNumber() : 0.5));
 
-const balanceDiff = computed(() => Math.abs(matterValue.value - antimatterValue.value));
-const isBalanced = computed(() => balanceDiff.value <= balanceMass);
+const balanceDiff = computed(() => matterValue.value.minus(antimatterValue.value).abs());
+const isBalanced = computed(() => balanceDiff.value.lte(balanceMass));
 
 const leftLimit = computed(() =>
-  total.value > 0 ? (Math.max(0, total.value / 2 - balanceMass) / total.value) * 100 : 0,
+  total.value.gt(0)
+    ? new Decimal(total.value.div(2).minus(balanceMass).max(0).div(total.value).times(100)).toNumber()
+    : 0,
 );
 const rightLimit = computed(() =>
-  total.value > 0 ? (Math.min(total.value, total.value / 2 + balanceMass) / total.value) * 100 : 100,
+  total.value.gt(0)
+    ? new Decimal(Decimal.min(total.value, total.value.div(2).plus(balanceMass)).div(total.value).times(100)).toNumber()
+    : 100,
 );
 </script>
 

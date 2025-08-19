@@ -14,22 +14,38 @@ const suffixes = [
 ]
 
 export function formatNumber(num) {
+  // Если это число, преобразуем в Decimal
   if (typeof num === 'number') {
     num = new Decimal(num);
   }
-
+  // Если это строка, пытаемся преобразовать в Decimal
   if (!(num instanceof Decimal)) {
     num = new Decimal(num);
   }
 
   // Для очень маленьких чисел
   if (num.lt(0.001) && num.gt(0)) {
-    return num.toExponential(2)
+    return num.toExponential(2);
+  }
+
+  // Для чисел меньше 10
+  if (num.lt(10)) {
+    return num.toFixed(4);
+  }
+
+  // Для чисел меньше 100
+  if (num.lt(100)) {
+    return num.toFixed(3);
   }
 
   // Для чисел меньше 1000
   if (num.lt(1000)) {
-    return num.toFixed(0);
+    return num.toFixed(2);
+  }
+
+  // Для чисел меньше 10000
+  if (num.lt(10000)) {
+    return num.toFixed(1);
   }
 
   // Для экспоненциально больших чисел (больше 10^300)
@@ -37,53 +53,21 @@ export function formatNumber(num) {
     return num.toExponential(2);
   }
 
-  // Обычное форматирование с суффиксами
-  let tier = Math.floor(Math.log10(num.toNumber()) / 3);
-
-  if (tier >= suffixes.length) {
-    // Если число слишком большое для наших суффиксов
-    return num.toExponential(2);
+  // Для чисел больше 1e15 — используем суффиксы
+  if (num.gte(1e15)) {
+    let tier = Math.floor(Math.log10(num.toNumber()) / 3);
+    if (tier >= suffixes.length) {
+      return num.toExponential(2);
+    }
+    let suffix = suffixes[tier];
+    let scale = Math.pow(10, tier * 3);
+    let scaled = num.div(scale);
+    let precision = scaled.gte(100) ? 0 : scaled.gte(10) ? 1 : 2;
+    return scaled.toFixed(precision) + suffix;
   }
 
-  let suffix = suffixes[tier];
-  let scale = Math.pow(10, tier * 3);
-  let scaled = num.div(scale);
-
-  let precision = scaled.gte(100) ? 0 : scaled.gte(10) ? 1 : 2;
-
-  return scaled.toFixed(precision) + suffix;
-}
-
-// Для игровых ресурсов - показываем больше деталей для маленьких чисел
-export function formatResource(num) {
-  if (typeof num === 'number') {
-    num = new Decimal(num);
-  }
-
-  if (!(num instanceof Decimal)) {
-    num = new Decimal(num);
-  }
-
-  if (num.lt(1)) {
-    return num.toFixed(2);
-  } else if (num.lt(10)) {
-    return num.toFixed(1);
-  } else {
-    return formatNumber(num);
-  }
-}
-
-export function formatEnergy(num) {
-    if (num.lt(10)) {
-    return num.toFixed(2);
-  } else if (num.lt(100)) {
-    return num.toFixed(1);
-  } else if (num.gte(1e15)) {
-    return formatNumber(num);
-  }
-
+  // Для остальных — локализованное целое число
   const number = num.toNumber();
-
   return number.toLocaleString(localStorage.getItem('locale') === 'ru' ? 'ru-RU' : 'en-US', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
