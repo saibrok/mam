@@ -1,104 +1,89 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { computed, onMounted, onUnmounted, watch } from 'vue';
+
+import { useLog } from './composables/useLog';
+
 import { useGameStore } from './stores/gameStore.js';
+import { useSettingsStore } from './stores/settingsStore.js';
 
 import MatterTree from './components/MatterTree.vue';
-
 import GameHeader from './components/GameHeader.vue';
 import CurrentCategory from './components/CurrentCategory.vue';
+import SettingsModal from './components/SettingsModal.vue';
 
-import LanguageSwitcher from './components/LanguageSwitcher.vue';
+const $log = useLog();
 
 const store = useGameStore();
+const settings = useSettingsStore();
 
-const { matterTree, antimatterTree } = computed(() => store.treeState).value;
-
-const UPDATE_INTERVAL = ref(1000);
-const USE_REQUEST_ANIMATION_FRAME = ref(false);
-const INTERVALS = [
-  { value: 16, name: '≈ 60 FPS' },
-  { value: 33, name: '≈ 30 FPS' },
-  { value: 100, name: '≈ 10 FPS' },
-  { value: 250, name: '≈ 4 FPS' },
-  { value: 500, name: '≈ 2 FPS' },
-  { value: 1000, name: '= 1 FPS' },
-];
+const matterTree = computed(() => store.treeState.matterTree);
+const antimatterTree = computed(() => store.treeState.antimatterTree);
 
 let lastUpdate = Date.now();
 let accumulatedTime = 0;
 let intervalId = null;
 let rafId = null;
 
-const currentMatterCategory = computed(() => {
-  return store.currentCategory.matter;
-});
-
-const currentAntimatterCategory = computed(() => {
-  return store.currentCategory.antimatter;
-});
+const currentMatterCategory = computed(() => store.currentCategory.matter);
+const currentAntimatterCategory = computed(() => store.currentCategory.antimatter);
 
 const gameLoop = () => {
   const now = Date.now();
   const deltaTime = (now - lastUpdate) / 1000;
   lastUpdate = now;
 
-  if (USE_REQUEST_ANIMATION_FRAME.value) {
+  if (settings.useRAF) {
     accumulatedTime += deltaTime;
-    if (accumulatedTime >= UPDATE_INTERVAL.value / 1000) {
-      store.tick(accumulatedTime); // вызываем генерацию энергии
+
+    if (accumulatedTime >= settings.updateInterval / 1000) {
+      $log('LOG ::: App.vue : accumulatedTime: RAF', accumulatedTime);
+      store.tick(accumulatedTime);
       accumulatedTime = 0;
     }
     rafId = requestAnimationFrame(gameLoop);
   } else {
-    store.tick(deltaTime); // вызываем генерацию энергии
+    $log('LOG ::: App.vue : deltaTime: SL', deltaTime);
+    store.tick(deltaTime);
   }
 };
 
-watch(UPDATE_INTERVAL, () => {
-  setGameLoopInterval();
-});
+watch(
+  () => [settings.updateInterval, settings.useRAF],
+  () => {
+    accumulatedTime = 0;
+    lastUpdate = Date.now();
 
-const setGameLoopInterval = () => {
-  if (intervalId) {
-    clearInterval(intervalId);
-  }
-  intervalId = setInterval(gameLoop, UPDATE_INTERVAL.value);
-};
+    settings.saveSettings();
+
+    if (settings.useRAF) {
+      if (intervalId) clearInterval(intervalId);
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(gameLoop);
+    } else {
+      if (rafId) cancelAnimationFrame(rafId);
+      if (intervalId) clearInterval(intervalId);
+      intervalId = setInterval(gameLoop, settings.updateInterval);
+    }
+  },
+);
 
 onMounted(() => {
   lastUpdate = Date.now();
-  if (USE_REQUEST_ANIMATION_FRAME.value) {
+  if (settings.useRAF) {
     rafId = requestAnimationFrame(gameLoop);
   } else {
-    setGameLoopInterval();
+    intervalId = setInterval(gameLoop, settings.updateInterval);
   }
 });
 
 onUnmounted(() => {
-  if (USE_REQUEST_ANIMATION_FRAME.value && rafId) {
-    cancelAnimationFrame(rafId);
-  } else if (intervalId) {
-    clearInterval(intervalId);
-  }
+  if (rafId) cancelAnimationFrame(rafId);
+  if (intervalId) clearInterval(intervalId);
 });
 </script>
 
 <template>
   <div class="game">
-    <select
-      class="update-interval"
-      v-model="UPDATE_INTERVAL"
-      @input="setGameLoopInterval"
-    >
-      <option
-        v-for="interval in INTERVALS"
-        :value="interval.value"
-        :key="interval.value"
-      >
-        {{ interval.value }}мс {{ interval.name }}
-      </option>
-    </select>
-
     <MatterTree :tree="matterTree" />
 
     <div class="main-content">
@@ -108,10 +93,11 @@ onUnmounted(() => {
         <CurrentCategory
           :tree="matterTree"
           :currentCategory="currentMatterCategory"
+          isMatter
         />
 
         <CurrentCategory
-          :tree="matterTree"
+          :tree="antimatterTree"
           :currentCategory="currentAntimatterCategory"
         />
       </div>
@@ -123,7 +109,7 @@ onUnmounted(() => {
     />
   </div>
 
-  <LanguageSwitcher class="language-switcher" />
+  <SettingsModal />
 </template>
 
 <style>
@@ -153,36 +139,27 @@ select {
   min-width: 200px;
 }
 
-.language-switcher {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 10;
-}
-
-.update-interval {
-  position: absolute;
-  top: 60px;
-  right: 20px;
-  z-index: 10;
-  font-size: 16px;
-  padding: 8px 12px;
-  border-radius: 4px;
-  border: 1px solid #3d3d5c;
-  background: #2d2d42;
-  color: #e0e0e0;
-}
-
 .category-container {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   flex-grow: 1;
 }
 
 .current-category {
   flex-grow: 1;
-  &:last-child {
-    border-left: #1e1e2f 10px solid;
+  position: relative;
+
+  &:last-child::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: -5px;
+    width: 10px;
+    background: linear-gradient(135deg, #3d3d5c, #2d2d42);
+    border-radius: 5px;
+    box-shadow: 0 0 10px #3d3d5c;
+    /* border-left: #1e1e2f 10px solid; */
   }
 }
 </style>

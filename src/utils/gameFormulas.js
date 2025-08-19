@@ -45,9 +45,9 @@ export const gameFormulas = {
   },
 
   // Стоимость улучшения генератора
-  getUpgradeCost(baseCost, currentLevel) {
-    const { GROWTH_COST_MULTIPLIER } = FORMULA_CONSTANTS;
-    return baseCost.mul(GROWTH_COST_MULTIPLIER.pow(currentLevel - 1));
+  getUpgradeGeneratorCost(categoryIndex, elementIndex) {
+    const { BASE_COST, GROWTH_COST_MULTIPLIER } = FORMULA_CONSTANTS;
+    return BASE_COST.mul(GROWTH_COST_MULTIPLIER.pow(elementIndex - 1));
   },
 
   // Скорость генерации энергии элементом
@@ -60,5 +60,10 @@ export const gameFormulas = {
   // Скорость генерации элементов
   getElementGenerationRate(generatorLevel, deltaTime) {
     return new Decimal(generatorLevel).mul(deltaTime);
+  },
+
+  // Проверка, достаточно ли ресурсов для покупки
+  canAfford(cost, resources) {
+    return resources.gte(cost);
   },
 };

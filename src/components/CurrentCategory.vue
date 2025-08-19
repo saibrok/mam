@@ -1,14 +1,13 @@
 <template>
   <div class="current-category">
-    {{ tree[currentCategory] }}
-
+    
     <div class="category-header">
       <h2>{{ tree[currentCategory].icon }} {{ $t(`categories.${tree[currentCategory].id}`) }}</h2>
     </div>
 
-    <!-- <div class="elements-grid">
+    <div class="elements-grid">
       <div
-        v-for="(element, index) in currentCategory.elements"
+        v-for="(element, index) in tree[currentCategory].elements"
         :key="element.id"
         class="element-card"
         :class="{ locked: !element.unlocked }"
@@ -47,7 +46,7 @@
             :disabled="!canUpgradeElement(index)"
           >
             <div class="upgrade-level">Ур. {{ element.generator.level }}</div>
-            <div class="upgrade-cost">{{ formatNumber(getUpgradeCost(index)) }} ⚡</div>
+            <div class="upgrade-cost">{{ formatNumber(getUpgradeGeneratorCost(index)) }} ⚡</div>
 
             <div class="progress-bar">
               <div
@@ -60,15 +59,18 @@
           </button>
         </div>
       </div>
-    </div> -->
+    </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue';
 import { useGameStore } from '../stores/gameStore.js';
-import { formatNumber } from '../utils/formatNumber.js';
-import { Decimal } from '../utils/formatNumber.js';
+
+import { Decimal, formatNumber } from '../utils/formatNumber.js';
+import { gameFormulas } from '../utils/gameFormulas.js';
+
+const { getUpgradeGeneratorCost, canAfford } = gameFormulas;
 
 const props = defineProps({
   tree: {
@@ -79,44 +81,45 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  isMatter: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const store = useGameStore();
 
-// const getElementRate = (element) => {
-//   return new Decimal(element.generator.level);
-// };
+const getElementRate = (element) => {
+  return new Decimal(element.generator.level);
+};
 
-// const getUpgradeCost = (index) => {
-//   return store.getUpgradeCost(index);
-// };
+const canUpgradeElement = (index) => {
+  const cost = getUpgradeGeneratorCost(index);
 
-// const canUpgradeElement = (index) => {
-//   const cost = getUpgradeCost(index);
-//   return store.canAfford(cost);
-// };
+  return canAfford(cost, store.energy);
+};
 
-// const getLevelsToUnlockNextElement = (index) => {
-//   return Math.floor(10 * 1.7 ** index);
-// };
+const getLevelsToUnlockNextElement = (index) => {
+  return Math.floor(10 * 1.7 ** index);
+};
 
-// const upgradeElement = (index) => {
-//   const element = currentCategory.value.elements[index];
+const upgradeElement = (index) => {
+  const element = currentCategory.value.elements[index];
 
-//   const cost = getUpgradeCost(index);
-//   if (store.canAfford(cost)) {
-//     store.energy = store.energy.sub(cost);
-//     element.generator.level++;
-//   }
+  const cost = getUpgradeGeneratorCost(index);
+  if (canAfford(cost)) {
+    store.energy = store.energy.sub(cost);
+    element.generator.level++;
+  }
 
-//   if (element.generator.level >= getLevelsToUnlockNextElement(index) && currentCategory.value.elements[index + 1]) {
-//     currentCategory.value.elements[index + 1].unlocked = true;
-//   }
-// };
+  if (element.generator.level >= getLevelsToUnlockNextElement(index) && currentCategory.value.elements[index + 1]) {
+    currentCategory.value.elements[index + 1].unlocked = true;
+  }
+};
 
-// const progressPercentage = (index) => {
-//   return Math.min((store.energy / store.getUpgradeCost(index)) * 100);
-// };
+const progressPercentage = (index) => {
+  return Math.min((store.energy / getUpgradeGeneratorCost(index)) * 100);
+};
 </script>
 
 <style scoped>

@@ -16,7 +16,7 @@ export const useGameStore = defineStore('game', {
 
     treeState: getTreesState(),
 
-    currentCategory: { matter: 0, antimatter: 1 },
+    currentCategory: { matter: 1, antimatter: 1 },
 
     prestigeBonus: new Decimal(1),
   }),
