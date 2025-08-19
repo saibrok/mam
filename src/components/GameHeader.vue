@@ -70,19 +70,17 @@ const antimatterValue = computed(() => store.antimatter);
 }
 
 .energy-display {
-  display: grid;
-  grid-template-columns: 50% 50%;
+  display: flex;
+  flex-direction: column;
   font-size: 1.2em;
   font-weight: 600;
 }
 
 .energy-text {
-  text-align: right;
   padding: 0 10px;
 }
 
 .energy-count {
-  text-align: left;
   padding: 0 10px;
 }
 

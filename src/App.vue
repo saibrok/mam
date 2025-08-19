@@ -36,13 +36,13 @@ const gameLoop = () => {
     accumulatedTime += deltaTime;
 
     if (accumulatedTime >= settings.updateInterval / 1000) {
-      $log('LOG ::: App.vue : accumulatedTime: RAF', accumulatedTime);
+      // $log('LOG ::: App.vue : accumulatedTime: RAF', accumulatedTime);
       store.tick(accumulatedTime);
       accumulatedTime = 0;
     }
     rafId = requestAnimationFrame(gameLoop);
   } else {
-    $log('LOG ::: App.vue : deltaTime: SL', deltaTime);
+    // $log('LOG ::: App.vue : deltaTime: SL', deltaTime);
     store.tick(deltaTime);
   }
 };

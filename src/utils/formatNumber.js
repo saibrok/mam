@@ -54,7 +54,7 @@ export function formatNumber(num) {
   }
 
   // Для чисел больше 1e15 — используем суффиксы
-  if (num.gte(1e15)) {
+  if (num.gte(1e18)) {
     let tier = Math.floor(Math.log10(num.toNumber()) / 3);
     if (tier >= suffixes.length) {
       return num.toExponential(2);

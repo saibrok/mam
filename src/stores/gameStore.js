@@ -11,8 +11,8 @@ export const useGameStore = defineStore('game', {
     matter: new Decimal(0),
     antimatter: new Decimal(0),
 
-    matterSpeed: new Decimal(0.29),
-    antimatterSpeed: new Decimal(0.11),
+    matterSpeed: new Decimal(0.1),
+    antimatterSpeed: new Decimal(0.2),
 
     treeState: getTreesState(),
 
