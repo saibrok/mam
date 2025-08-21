@@ -3,7 +3,7 @@ import { Decimal } from './formatNumber.js';
 // Константы для формул
 const GROWTH_COST_MULTIPLIER = new Decimal(1.15);
 const GROWTH_ENERGY_MULTIPLIER = new Decimal(1.5);
-const BASE_MULTIPLIER = new Decimal(10);
+const BASE_MULTIPLIER = new Decimal(100);
 const BASE_COST = new Decimal(10);
 const BASE_ENERGY = new Decimal(0.03);
 const CATEGORY_COST_POWER = 2;
@@ -14,7 +14,7 @@ const GENERATOR_COST_MULTIPLIER = new Decimal(2);
 
 // Требования для разблокировки категории
 function getCategoryRequirements(categoryIndex) {
-  return BASE_COST.mul(BASE_MULTIPLIER).pow(categoryIndex * CATEGORY_COST_POWER);
+  return BASE_COST.mul(BASE_MULTIPLIER).pow(new Decimal(categoryIndex).pow(3) * CATEGORY_COST_POWER);
 }
 
 // Требования для разблокировки элемента
