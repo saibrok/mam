@@ -2,11 +2,11 @@ export const EN = {
   energy: 'Energy',
   sec: 's',
   matter: 'Matter',
-  antimatter: 'Antimatter',
+  antiMatter: 'antiMatter',
 
   tree: {
     matter: 'Matter',
-    antimatter: 'Antimatter',
+    antiMatter: 'antiMatter',
     requirement: 'Requirement',
   },
 

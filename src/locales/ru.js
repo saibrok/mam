@@ -3,11 +3,11 @@ export const RU = {
   sec: 'сек',
 
   matter: 'Материя',
-  antimatter: 'Антиматерия',
+  antiMatter: 'Антиматерия',
 
   tree: {
     matter: 'Материя',
-    antimatter: 'Антиматерия',
+    antiMatter: 'Антиматерия',
     requirement: 'Требование',
   },
 

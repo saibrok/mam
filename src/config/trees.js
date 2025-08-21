@@ -223,7 +223,7 @@ export const MATTER_TREE = [
   },
 ];
 
-export const ANTIMATTER_TREE = [
+export const ANTI_MATTER_TREE = [
   {
     id: 'anti-strings',
     icon: '〰️',

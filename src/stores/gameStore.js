@@ -9,20 +9,20 @@ export const useGameStore = defineStore('game', {
   state: () => ({
     energy: new Decimal(0),
     matter: new Decimal(0),
-    antimatter: new Decimal(0),
+    antiMatter: new Decimal(0),
 
     matterSpeed: new Decimal(0.1),
-    antimatterSpeed: new Decimal(0.2),
+    antiMatterSpeed: new Decimal(0.2),
 
     timerDuration: new Decimal(5),
 
     treeState: getTreesState(),
 
-    currentCategory: { matter: 1, antimatter: 1 },
+    currentCategory: { matter: 0, antiMatter: 0 },
 
     prestigeBonus: new Decimal(1),
 
-    balanceMass: new Decimal(0.5),
+    balanceMass: new Decimal(110.5),
 
     isGameOver: false,
   }),

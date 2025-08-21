@@ -17,7 +17,7 @@ const store = useGameStore();
 const settings = useSettingsStore();
 
 const matterTree = computed(() => store.treeState.matterTree);
-const antimatterTree = computed(() => store.treeState.antimatterTree);
+const antiMatterTree = computed(() => store.treeState.antiMatterTree);
 
 let lastUpdate = Date.now();
 let accumulatedTime = 0;
@@ -25,7 +25,7 @@ let intervalId = null;
 let rafId = null;
 
 const currentMatterCategory = computed(() => store.currentCategory.matter);
-const currentAntimatterCategory = computed(() => store.currentCategory.antimatter);
+const currentantiMatterCategory = computed(() => store.currentCategory.antiMatter);
 
 const gameLoop = () => {
   const now = Date.now();
@@ -107,21 +107,17 @@ onUnmounted(() => {
 
       <div class="category-container">
         <CurrentCategory
-          :tree="matterTree"
           :currentCategory="currentMatterCategory"
           isMatter
         />
 
-        <CurrentCategory
-          :tree="antimatterTree"
-          :currentCategory="currentAntimatterCategory"
-        />
+        <CurrentCategory :currentCategory="currentantiMatterCategory" />
       </div>
     </div>
 
     <MatterTree
-      title="antimatter"
-      :tree="antimatterTree"
+      title="antiMatter"
+      :tree="antiMatterTree"
     />
   </div>
 
@@ -133,11 +129,12 @@ onUnmounted(() => {
   width: 100%;
   min-height: 100svh;
   background: linear-gradient(135deg, #1e1e2f, #2d2d42);
-  margin: auto 100px;
+  margin: auto 80px;
 }
 
 .game {
   display: flex;
+  max-width: 1800px;
   min-height: 100%;
   border: 1px solid #4a4a6a;
   border-radius: 24px;
@@ -157,12 +154,12 @@ select {
 
 .category-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 50% 50%;
   flex-grow: 1;
 }
 
 .current-category {
-  flex-grow: 1;
+  width: 100%;
   position: relative;
 
   &:last-child::before {
@@ -175,7 +172,6 @@ select {
     background: linear-gradient(135deg, #3d3d5c, #2d2d42);
     border-radius: 5px;
     box-shadow: 0 0 10px #3d3d5c;
-    /* border-left: #1e1e2f 10px solid; */
   }
 }
 </style>

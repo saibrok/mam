@@ -5,9 +5,9 @@
         {{ $t('matter') }}<br />
         {{ formatNumber(matter) }}
       </div>
-      <div class="matter-value antimatter-value">
-        {{ $t('antimatter') }}<br />
-        {{ formatNumber(antimatter) }}
+      <div class="matter-value antiMatter-value">
+        {{ $t('antiMatter') }}<br />
+        {{ formatNumber(antiMatter) }}
       </div>
     </div>
     <div class="balance-slider">
@@ -48,7 +48,7 @@
       {{ balanceMass }}
     </div>
     <BaseModal v-model="showModal">
-      <div class="game-over">МЫ ПРОИГРАЛИ! ! ААА-АА-ААА-ААА-А!! !!! ! ! - {{ store.isGameOver }}</div>
+      <div class="game-over">МЫ ПРОИГРАЛИ! ! ААА-АА-ААА-ААА-А!! !!! ! !</div>
     </BaseModal>
   </div>
 </template>
@@ -62,12 +62,12 @@ import BaseModal from './BaseModal.vue';
 const store = useGameStore();
 
 const matter = computed(() => store.matter);
-const antimatter = computed(() => store.antimatter);
+const antiMatter = computed(() => store.antiMatter);
 const balanceMass = computed(() => store.balanceMass);
 
-const total = computed(() => matter.value.plus(antimatter.value));
+const total = computed(() => matter.value.plus(antiMatter.value));
 const matterRatio = computed(() => (total.value.gt(0) ? matter.value.div(total.value).toNumber() : 0.5));
-const balanceDiff = computed(() => matter.value.minus(antimatter.value).abs());
+const balanceDiff = computed(() => matter.value.minus(antiMatter.value).abs());
 const isBalanced = computed(() => balanceDiff.value.lte(balanceMass.value));
 
 const limit = computed(() => {
@@ -126,7 +126,7 @@ onUnmounted(() => {
 .balance-label {
   display: flex;
   justify-content: space-around;
-  margin-bottom: 18px;
+  margin-bottom: 36px;
   color: #fbbf24;
   font-weight: 500;
 }
@@ -140,7 +140,7 @@ onUnmounted(() => {
   font-size: 0.95em;
 }
 
-.antimatter-value {
+.antiMatter-value {
   color: #a78bfa;
   background: rgba(167, 139, 250, 0.1);
 }
@@ -212,6 +212,7 @@ onUnmounted(() => {
   background: rgba(0, 0, 0, 0.6);
   padding: 2px 4px;
   z-index: 5;
+  white-space: nowrap;
 }
 
 .slider-thumb-current::after {

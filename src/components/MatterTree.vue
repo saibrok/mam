@@ -1,7 +1,7 @@
 <template>
   <div
     class="tree"
-    :class="{ anti: title === 'antimatter' }"
+    :class="{ anti: title === 'antiMatter' }"
   >
     <div class="timeline-header">
       <h3>{{ $t(`tree.${title}`) }}</h3>
@@ -14,7 +14,7 @@
         class="timeline-item"
         :class="{
           unlocked: category.unlocked,
-          current: index === (title === 'antimatter' ? store.currentCategory.antimatter : store.currentCategory.matter),
+          current: index === (title === 'antiMatter' ? store.currentCategory.antiMatter : store.currentCategory.matter),
           completed: isCompleted(category),
         }"
       >
