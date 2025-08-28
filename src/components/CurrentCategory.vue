@@ -20,8 +20,6 @@ import { computed } from 'vue';
 
 import { useGameStore } from '../stores/gameStore.js';
 
-import { getUpgradeGeneratorCost, canAfford } from '../utils/gameFormulas.js';
-
 import ElementCard from './ElementCard.vue';
 
 const props = defineProps({
@@ -38,28 +36,6 @@ const props = defineProps({
 const store = useGameStore();
 
 const tree = computed(() => (props.isMatter ? store.treeState.matterTree : store.treeState.antiMatterTree));
-
-const getLevelsToUnlockNextElement = (index) => {
-  return Math.floor(10 * 1.7 ** index);
-};
-
-const upgradeElement = (index) => {
-  const element = tree[currentCategory].elements[index];
-
-  const cost = getUpgradeGeneratorCost(index);
-  if (canAfford(cost)) {
-    store.energy = store.energy.sub(cost);
-    element.generator.level++;
-  }
-
-  if (element.generator.level >= getLevelsToUnlockNextElement(index) && currentCategory.value.elements[index + 1]) {
-    currentCategory.value.elements[index + 1].unlocked = true;
-  }
-};
-
-const progressPercentage = (index) => {
-  return Math.min((store.energy / getUpgradeGeneratorCost(index)) * 100);
-};
 </script>
 
 <style scoped>

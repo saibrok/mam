@@ -1,20 +1,7 @@
 import Decimal from 'break_eternity.js';
 
-// Суффиксы для больших чисел
-// prettier-ignore
+// Базовые суффиксы (до 10^99)
 const suffixes = [
-  '', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc',
-  'UDc', 'DDc', 'TDc', 'QaDc', 'QiDc', 'SxDc', 'SpDc', 'OcDc', 'NoDc', 'Vg',
-  'UVg', 'DVg', 'TVg', 'QaVg', 'QiVg', 'SxVg', 'SpVg', 'OcVg', 'NoVg', 'Tg',
-  'UTg', 'DTg', 'TTg', 'QaTg', 'QiTg', 'SxTg', 'SpTg', 'OcTg', 'NoTg', 'Qd',
-  'UQd', 'DQd', 'TQd', 'QaQd', 'QiQd', 'SxQd', 'SpQd', 'OcQd', 'NoQd', 'Qt',
-  'UQt', 'DQt', 'TQt', 'QaQt', 'QiQt', 'SxQt', 'SpQt', 'OcQt', 'NoQt', 'Sx',
-  'USx', 'DSx', 'TSx', 'QaSx', 'QiSx', 'SxSx', 'SpSx', 'OcSx', 'NoSx', 'Sp',
-  'USp', 'DSp', 'TSp', 'QaSp', 'QiSp', 'SxSp', 'SpSp', 'OcSp', 'NoSp', 'Oc'
-]
-
-// Базовые суффиксы (горизонталь) для степеней от 10^0 до 10^33
-const baseSuffixes = [
   '', // 10^0
   'K', // 10^3 (тысяча)
   'M', // 10^6 (миллион)
@@ -27,225 +14,212 @@ const baseSuffixes = [
   'Oc', // 10^27 (октиллион)
   'No', // 10^30 (нониллион)
   'Dc', // 10^33 (дециллион)
+  'UDc', // 10^36 (ундециллион)
+  'DDc', // 10^39 (дуодециллион)
+  'TDc', // 10^42 (тредециллион)
+  'QaDc', // 10^45 (квадрадециллион)
+  'QiDc', // 10^48 (квинтдециллион)
+  'SxDc', // 10^51 (секстдециллион)
+  'SpDc', // 10^54 (септдециллион)
+  'OcDc', // 10^57 (октодециллион)
+  'NoDc', // 10^60 (нонодециллион)
+  'Vg', // 10^63 (вигинтиллион)
+  'UVg', // 10^66 (унвигинтиллион)
+  'DVg', // 10^69 (дуовигинтиллион)
+  'TVg', // 10^72 (тревигинтиллион)
+  'QaVg', // 10^75 (квадравигинтиллион)
+  'QiVg', // 10^78 (квинтвигинтиллион)
+  'SxVg', // 10^81 (секствигинтиллион)
+  'SpVg', // 10^84 (септвигинтиллион)
+  'OcVg', // 10^87 (октовигинтиллион)
+  'NoVg', // 10^90 (ноновигинтиллион)
+  'Tg', // 10^93 (тригинтиллион)
+  'UTg', // 10^96 (унтригинтиллион)
+  'DTg', // 10^99 (дуотригинтиллион)
 ];
 
-// Дополнительные суффиксы (вертикаль) для уровней до 10^999
-const levelSuffixes = [
-  '', // 10^0 (базовый уровень)
-  'Vg', // 10^33 (вигинтиллион)
-  'Tg', // 10^66 (тревигинтиллион)
-  'Qd', // 10^99 (квадрагинтиллион)
-  'Qt', // 10^132 (квинтвигинтиллион)
-  'Qv', // 10^165 (квинквагинтиллион)
-  'Sv', // 10^198 (септвигинтиллион)
-  'Ov', // 10^231 (октовигинтиллион)
-  'Nv', // 10^264 (ноновигинтиллион)
-  'Ctg', // 10^297 (центумвигинтиллион)
-  'Cqd', // 10^330 (центумквадрагинтиллион)
-  'Cqt', // 10^363 (центумквинтвигинтиллион)
-  'Cqv', // 10^396 (центумквинквагинтиллион)
-  'Csv', // 10^429 (центумсептвигинтиллион)
-  'Cov', // 10^462 (центумоктовигинтиллион)
-  'Cnv', // 10^495 (центумноновигинтиллион)
-  'Cdc', // 10^528 (центумдециллион)
-  'Udc', // 10^561 (ундециллион)
-  'Ddc', // 10^594 (дуодециллион)
-  'Tdc', // 10^627 (тредециллион)
-  'Qadc', // 10^660 (квадрадециллион)
-  'Qidc', // 10^693 (квинтдециллион)
-  'Sxdc', // 10^726 (секстдециллион)
-  'Spdc', // 10^759 (септдециллион)
-  'Odc', // 10^792 (октодециллион)
-  'Ndc', // 10^825 (нонодециллион)
-  'Ctdc', // 10^858 (центумтредециллион)
-  'Cqdc', // 10^891 (центумквадрадециллион)
-  'Cgidc', // 10^924 (центумквинтдециллион)
-  'Csxdc', // 10^957 (центумсекстдециллион)
-  'Cspdc', // 10^990 (центумсептдециллион)
+// Базовые суффиксы (до 10^30)
+const baseSuffixes = [
+  '', // 10^0
+  'K', // 10^3 (тысяча)
+  'M', // 10^6 (миллион)
+  'B', // 10^9 (миллиард)
+  'T', // 10^12 (триллион)
+  'Qa', // 10^15 (квадриллион)
+  'Qi', // 10^18 (квинтиллион)
+  'Sx', // 10^21 (секстиллион)
+  'Sp', // 10^24 (септиллион)
+  'Oc', // 10^27 (октиллион)
+  'No', // 10^30 (нониллион)
+];
+
+// Префиксы подуровней
+const subLevelPrefixes = [
+  '', // 0: дециллион (Dc), вигинтиллион (Vg)
+  'U', // 1: ундециллион (UDc), унвигинтиллион (UVg)
+  'D', // 2: дуодециллион (DDc), дуовигинтиллион (DVg)
+  'T', // 3: тредециллион (TDc), тревигинтиллион (TVg)
+  'Qa', // 4: квадрадециллион (QaDc), квадравигинтиллион (QaVg)
+  'Qi', // 5: квинтдециллион (QiDc), квинтвигинтиллион (QiVg)
+  'Sx', // 6: секстдециллион (SxDc), секствигинтиллион (SxVg)
+  'Sp', // 7: септдециллион (SpDc), септвигинтиллион (SpVg)
+  'Oc', // 8: октодециллион (OcDc), октовигинтиллион (OcVg)
+  'No', // 9: нонодециллион (NoDc), ноновигинтиллион (NoVg)
+  'C', // 10: центумдециллион (CDc), центумвигинтиллион (CVg)
+];
+
+// Основные уровни для больших чисел (после 10^33)
+const majorLevels = [
+  'Dc', // 10^33 (дециллион)
+  'Vg', // 10^63 (вигинтиллион)
+  'Tg', // 10^93 (тригинтиллион)
+  'Qd', // 10^123 (квадрагинтиллион)
+  'Qt', // 10^153 (квинтвигинтиллион)
+  'Sv', // 10^183 (секствигинтиллион)
+  'Ov', // 10^213 (октовигинтиллион)
+  'Nv', // 10^243 (ноновигинтиллион)
+  'Ctg', // 10^273 (центумтригинтиллион)
+  'Cqd', // 10^303 (центумквадрагинтиллион)
+  'Cqt', // 10^333 (центумквинтвигинтиллион)
+  'Csv', // 10^363 (центумсекствигинтиллион)
+  'Cov', // 10^393 (центумоктовигинтиллион)
+  'Cnv', // 10^423 (центумноновигинтиллион)
+  'Cdc', // 10^453 (центумдециллион)
+  'Udc', // 10^483 (ундециллион второго порядка)
+  'Ddc', // 10^513 (дуодециллион второго порядка)
+  'Tdc', // 10^543 (тредециллион второго порядка)
+  'Qadc', // 10^573 (квадрадециллион второго порядка)
+  'Qidc', // 10^603 (квинтдециллион второго порядка)
+  'Sxdc', // 10^633 (секстдециллион второго порядка)
+  'Spdc', // 10^663 (септдециллион второго порядка)
+  'Odc', // 10^693 (октодециллион второго порядка)
+  'Ndc', // 10^723 (нонодециллион второго порядка)
+  'Ctdc', // 10^753 (центумтредециллион)
+  'Cqdc', // 10^783 (центумквадрадециллион)
+  'Cgidc', // 10^813 (центумквинтдециллион)
+  'Csxdc', // 10^843 (центумсекстдециллион)
+  'Cspdc', // 10^873 (центумсептдециллион)
+  'Codc', // 10^903 (центумоктодециллион)
+  'Cndc', // 10^933 (центумнонодециллион)
+  'Ccdc', // 10^963 (центумцентумдециллион)
   'Ggl', // 10^999 (гугол-дециллион)
 ];
 
-// Функция для преобразования множителя Ggl в компактный суффикс
-// function getGglPrefix(gglCount) {
-//   const gglCountDecimal = new Decimal(gglCount);
-//   if (gglCountDecimal.lt(3)) {
-//     return 'Ggl'.repeat(gglCountDecimal.toNumber());
-//   }
+// Функция для добавления пробелов в число (группировка по 3 цифры)
+function addSpaces(numStr) {
+  return numStr.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
 
-//   const baseIndex = gglCountDecimal.div(3).floor();
-//   const baseRemainder = gglCountDecimal.mod(3);
-//   if (baseIndex.lt(baseSuffixes.length)) {
-//     let prefix = 'Ggl' + baseSuffixes[baseIndex.toNumber()];
-//     if (baseRemainder.gt(0)) {
-//       prefix = 'Ggl'.repeat(baseRemainder.toNumber()) + prefix;
-//     }
-//     return prefix;
-//   }
+// // Функция для получения суффикса на основе экспоненты
+// function getSuffixForExponent(exp) {
+//   if (exp < 3) return '';
 
-//   // Для очень больших gglCount используем формат 'Ggl^'
-//   return `Ggl^${gglCountDecimal.toString()}`;
+//   // Смещаем экспоненту на 15, чтобы K соответствовал 10^15
+//   const shiftedExp = exp - 15;
+//   const basePower = Math.floor(shiftedExp / 3) * 3 + 3;
+//   const levelIndex = Math.floor(basePower / 99);
+//   const baseSuffixIndex = Math.floor((basePower % 99) / 3);
+
+//   return suffixes[baseSuffixIndex] + suffixes[levelIndex];
 // }
 
-// // Функция для получения суффикса по степени
-// function getSuffix(power) {
-//   // Конвертируем power в Decimal для точной работы с большими числами
-//   const powerDecimal = new Decimal(power);
-//   if (powerDecimal.eq(0)) return '';
-//   // if (powerDecimal.lt(0) || !powerDecimal.isInteger()) return 'Invalid';
+// Функция для получения суффикса на основе экспоненты
+function getSuffixForExponent(exp) {
+  // Если экспонента меньше 3, возвращаем пустой суффикс
+  if (exp < 3) return '';
 
-//   // Для степеней >= 1000 используем 'Ggl' (10^999) как базовый суффикс
-//   const gglPower = new Decimal(999);
-//   if (powerDecimal.gte(1000)) {
-//     const gglCount = powerDecimal.div(gglPower).floor(); // Сколько раз 10^999
-//     const remainingPower = powerDecimal.mod(gglPower); // Остаток
-//     const gglPrefix = getGglPrefix(gglCount);
-//     const remainderSuffix = remainingPower.eq(0) ? '' : getSuffix(remainingPower.toNumber());
-//     return gglPrefix + remainderSuffix;
-//   }
+  // Смещаем экспоненту на 15, чтобы K соответствовал 10^15 (как в старой функции)
+  const shiftedExp = exp - 15;
 
-//   // Для степеней < 1000 используем levelSuffixes и baseSuffixes
-//   const levelSize = (baseSuffixes.length - 1) * 3; // 11 * 3 = 33
-//   const level = powerDecimal.div(levelSize).floor();
-//   const basePower = powerDecimal.mod(levelSize);
-//   const baseIndex = basePower.div(3).floor();
+  // Определяем уровень и подуровень
+  const levelIndex = Math.floor(Math.floor(shiftedExp / 3) / baseSuffixes.length);
+  const subLevelIndex = levelIndex % subLevelPrefixes.length;
+  const majorLevelIndex = Math.floor(levelIndex / subLevelPrefixes.length);
 
-//   let suffix = '';
-//   if (level.gt(0)) {
-//     suffix += levelSuffixes[Math.min(level.toNumber(), levelSuffixes.length - 1)];
-//   }
-//   if (baseIndex.gt(0) || (level.eq(0) && basePower.gte(3))) {
-//     suffix += baseSuffixes[Math.min(baseIndex.toNumber(), baseSuffixes.length - 1)];
-//   }
+  // Если экспонента соответствует базовым суффиксам (до 10^30)
+  if (shiftedExp < baseSuffixes.length * 3) {
+    return baseSuffixes[Math.floor(shiftedExp / 3)];
+  }
 
-//   return suffix || '';
-// }
+  // Формируем суффикс для больших чисел
+  const subPrefix = subLevelPrefixes[subLevelIndex];
+  const majorLevel = majorLevelIndex < majorLevels.length ? majorLevels[majorLevelIndex] : 'C'.repeat(majorLevelIndex);
+  return `${subPrefix}${majorLevel}`;
+}
 
-
-
-// export function formatNumber(num) {
-//   // Если это число или строка, преобразуем в Decimal
-//   if (typeof num === 'number' || typeof num === 'string') {
-//     num = new Decimal(num);
-//   }
-
-//   // Убедимся, что входное значение — объект Decimal
-//   if (!(num instanceof Decimal)) {
-//     num = new Decimal(num);
-//   }
-
-//   // Для очень маленьких чисел (< 0.001 и > 0) — экспоненциальная запись с 3 знаками
-//   if (num.lt(0.001) && num.gt(0)) {
-//     return num.toExponential(3);
-//   }
-
-//   // Для чисел < 10 — 2 знака после запятой
-//   if (num.lt(10)) {
-//     return num.toFixed(2);
-//   }
-
-//   // Для чисел < 100 — 1 знак после запятой
-//   if (num.lt(100)) {
-//     return num.toFixed(1);
-//   }
-
-//   // Для чисел < 10000 — 0 знаков после запятой
-//   if (num.lt(10000)) {
-//     return num.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-//   }
-
-//   // Для экспоненциально больших чисел (≥ 10^300) — экспоненциальная запись с 3 знаками
-//   // if (num.gte(Decimal.pow(10, 300))) {
-//   //   return num.toExponential(3);
-//   // }
-
-//   // Для чисел ≥ 10^18 — используем суффиксы с менее резким сокращением
-//   if (num.gte(1e18)) {
-//     // Вычисляем уровень (tier) для выбора суффикса, используя Decimal.log10
-//     let tier = num.abs().log10().div(3).floor().toNumber();
-
-//     // Если tier превышает длину массива суффиксов, возвращаем экспоненциальную запись
-//     if (tier >= 10000) {
-//       return num.toExponential(3);
-//     }
-
-//     // Используем масштаб на четыре порядка меньше (tier-4), чтобы показывать больше цифр
-//     let scale = Decimal.pow(10, Decimal.max(0, (tier - 4) * 3));
-
-//     // Делим число на масштаб
-//     let scaled = num.div(scale);
-
-//     // Форматируем число без дробной части
-//     let formatted = scaled.toFixed(0);
-
-//     // Получаем суффикс для текущего уровня
-
-//     // let suffix = suffixes[tier];
-//     let suffix = getSuffix(tier * 3);
-
-//     // Добавляем пробелы каждые 3 цифры
-//     formatted = formatted.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-
-//     // Возвращаем число с суффиксом
-//     return `${formatted} ${suffix}`;
-//   }
-
-//   // Для остальных чисел (10000 ≤ num < 10^18) — локализованное целое число
-//   const number = num.toNumber();
-//   return number.toLocaleString('ru-RU', {
-//     minimumFractionDigits: 0,
-//     maximumFractionDigits: 0,
-//   });
-// }
-
-// Кастомная функция форматирования для больших чисел
-export function formatNumber(value) {
+// Основная функция форматирования
+export function formatNumber(value, level = 0) {
   if (!(value instanceof Decimal)) {
     value = new Decimal(value);
   }
 
-  if (value.lt(1000)) {
-    return value.toFixed(2);
+  if (value.lte(0)) return '0';
+
+  // Маленькие числа с decimal places
+  if (value.lt(100)) {
+    let places = 0;
+    if (value.lt(1)) places = 3;
+    else if (value.lt(10)) places = 2;
+    else places = 1;
+    return value.toFixed(places).replace('.', ',');
   }
 
-  if (value.layer === 0) {
-    // Для layer 0: используем старые суффиксы для exponent <= 999
-    const power = value.log10().floor().toNumber();
-    const mantissa = value.div(Decimal.pow(10, power - (power % 3))).toFixed(2);
-    const suffix = getSuffix(power - (power % 3)); // Используй старую getSuffix для малых
-    return `${mantissa}${suffix}`;
+  const exp = value.log10().floor();
+  const expNum = exp.toNumber();
+
+  // До 10^15: полные числа с пробелами
+  if (expNum < 15) {
+    return addSpaces(value.toFixed(0));
+  }
+
+  // Для экспонент от 15 до 999: полные числа с суффиксами
+  if (expNum < 1000) {
+    // Смещаем экспоненту для правильного определения суффикса
+    const suffix = getSuffixForExponent(expNum);
+
+    // Определяем basePower как ближайшую нижнюю степень 3
+    const basePower = Math.floor((expNum - 15) / 3) * 3 + 3;
+
+    // Вычисляем мантиссу
+    const mantissa = value.div(Decimal.pow(10, basePower));
+    let numberStr = mantissa.toFixed(0).replace(/\.?0+$/, '');
+
+    numberStr = addSpaces(numberStr);
+
+    return numberStr + (suffix ? ' ' + suffix : '');
+  }
+
+  // Экспоненциальный формат для exp >= 1000
+  const mantissa = value.div(Decimal.pow(10, exp));
+  let mantStr = mantissa.toFixed(0).replace(/\.?0+$/, '');
+
+  mantStr = addSpaces(mantStr);
+
+  // Форматируем экспоненту
+  let expStr = exp.toString();
+  if (exp.gte(1e15) && level < 5) {
+    expStr = formatNumber(exp, level + 1);
   } else {
-    // Для layer >= 1: layered exponents (двойная степень)
-    // Рекурсивно форматируем mag как exponent
-    const mantissa = value.sign * Math.exp(value.mag - Math.floor(value.mag)).toFixed(2);
-    const exponent = formatNumber(Math.floor(value.mag));
-    return `${mantissa}e${exponent}`;
+    expStr = addSpaces(expStr);
   }
+
+  return mantStr + ' e ' + expStr;
 }
 
-// Старая getSuffix для power < 1000 (оставляем как есть, но обрезаем до 999)
-function getSuffix(power) {
-  if (power < 3) return '';
-  if (power >= 999) return 'Ggl'; // Граница
-  const levelSize = 33;
-  const level = Math.floor(power / levelSize);
-  const basePower = power % levelSize;
-  const baseIndex = Math.floor(basePower / 3);
-  let suffix = '';
-  if (level > 0) {
-    suffix += levelSuffixes[Math.min(level, levelSuffixes.length - 1)];
-  }
-  if (baseIndex > 0) {
-    suffix += baseSuffixes[baseIndex];
-  }
-  return suffix;
-}
-
-// Пример использования
-console.log(getSuffix(57)); // 'Qa'
-console.log(getSuffix(1057)); // 'Qa'
-console.log(getSuffix(2057)); // 'Qa'
-console.log(getSuffix(20250)); // 'Qa'
-
-// Массивы baseSuffixes и levelSuffixes остаются теми же, что и раньше (до 'Ggl' для 10^999)
+// Тестирование
+console.log('1e6 (10^6):', formatNumber(new Decimal(1e6))); // "1 M"
+console.log('1e9 (10^9):', formatNumber(new Decimal(1e9))); // "1 B"
+console.log('1e12 (10^12):', formatNumber(new Decimal('1e12'))); // "1 T"
+console.log('1e15 (10^15):', formatNumber(new Decimal('1e15'))); // "1 Qa"
+console.log('1e16 (10^16):', formatNumber(new Decimal('1e16'))); // "10 Qa"
+console.log('1e17 (10^17):', formatNumber(new Decimal('1e17'))); // "100 Qa"
+console.log('1e18 (10^18):', formatNumber(new Decimal('1e18'))); // "1 Qi"
+console.log('1e21 (10^21):', formatNumber(new Decimal('1e21'))); // "1 Sx"
+console.log(
+  '1e21 (10^2100):',
+  formatNumber(new Decimal('2222222222222222222222')),
+); // "1 Sx"
+console.log('1234567890123456 (1.234e15):', formatNumber(new Decimal(1234567890123456))); // "1,234 Qa"
+console.log('1234567890123456789 (1.234e18):', formatNumber(new Decimal('1234567890123456789'))); // "1,234 Qi"
 
 export { Decimal };

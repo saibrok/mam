@@ -65,7 +65,7 @@ const store = useGameStore();
 const tree = computed(() => (props.isMatter ? store.treeState.matterTree : store.treeState.antiMatterTree));
 const element = computed(() => tree.value[props.categoryIndex].elements[props.elementIndex]);
 const getElementRate = (el) => new Decimal(el.generator.level);
-const upgradeCost = computed(() => getUpgradeGeneratorCost(props.isMatter, props.categoryIndex, props.elementIndex));
+const upgradeCost = computed(() => getUpgradeGeneratorCost(props.isMatter, props.categoryIndex, props.elementIndex, element.value.generator.level));
 const canUpgradeElement = computed(() => canAfford(upgradeCost.value, store.energy));
 
 const levelsToUnlockNextElement = (index) => {

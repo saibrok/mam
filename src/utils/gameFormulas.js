@@ -14,7 +14,7 @@ const GENERATOR_COST_MULTIPLIER = new Decimal(2);
 
 // Требования для разблокировки категории
 function getCategoryRequirements(categoryIndex) {
-  return BASE_COST.mul(BASE_MULTIPLIER).pow(new Decimal(categoryIndex).pow(3) * CATEGORY_COST_POWER);
+  return BASE_COST.mul(BASE_MULTIPLIER).pow(new Decimal(categoryIndex).pow(categoryIndex) * CATEGORY_COST_POWER);
 }
 
 // Требования для разблокировки элемента
@@ -29,14 +29,17 @@ function getGeneratorBaseEnergyRate(categoryIndex, elementIndex) {
 
 // Базовая стоимость генератора
 function getGeneratorBaseCost(categoryIndex, elementIndex) {
-  return BASE_COST.mul(BASE_MULTIPLIER.pow(categoryIndex)).mul(GENERATOR_COST_MULTIPLIER.pow(elementIndex));
+  return BASE_COST.mul(BASE_MULTIPLIER.pow(categoryIndex).pow(categoryIndex)).mul(GENERATOR_COST_MULTIPLIER.pow(elementIndex));
 }
 
 // Стоимость улучшения генератора
-function getUpgradeGeneratorCost(isMatter, categoryIndex, elementIndex) {
+function getUpgradeGeneratorCost(isMatter, categoryIndex, elementIndex, level) {
   const generatorBaseCost = getGeneratorBaseCost(categoryIndex, elementIndex);
+  const levelMultiplier = GROWTH_COST_MULTIPLIER.pow(level); // Множитель, зависящий от уровня
 
-  return generatorBaseCost.mul(GROWTH_COST_MULTIPLIER.pow(elementIndex - 1));
+  return generatorBaseCost
+    .mul(GROWTH_COST_MULTIPLIER.pow(elementIndex - 1))
+    .mul(levelMultiplier);
 }
 
 // Скорость генерации энергии элементом

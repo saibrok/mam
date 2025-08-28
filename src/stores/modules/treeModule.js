@@ -5,11 +5,11 @@ import { MATTER_TREE, ANTI_MATTER_TREE } from '../../config/trees.js';
 export function getTreesState() {
   const matterTree = MATTER_TREE.map((category, categoryIndex) => ({
     ...category,
-    requirements: getCategoryRequirements(categoryIndex).div(2),
+    requirements: getCategoryRequirements(categoryIndex).div(categoryIndex),
     elements: category.elements.map((element, elementIndex) => ({
       ...element,
       count: new Decimal(0),
-      requirements: getElementRequirements(categoryIndex, elementIndex).mul(2),
+      requirements: getElementRequirements(categoryIndex, elementIndex).mul(categoryIndex),
       unlocked: elementIndex === 0,
       generator: {
         level: 1,
@@ -20,11 +20,11 @@ export function getTreesState() {
 
   const antiMatterTree = ANTI_MATTER_TREE.map((category, categoryIndex) => ({
     ...category,
-    requirements: getCategoryRequirements(categoryIndex),
+    requirements: getCategoryRequirements(categoryIndex).mul(categoryIndex),
     elements: category.elements.map((element, elementIndex) => ({
       ...element,
       count: new Decimal(0),
-      requirements: getElementRequirements(categoryIndex, elementIndex),
+      requirements: getElementRequirements(categoryIndex, elementIndex).div(categoryIndex),
       unlocked: elementIndex === 0,
       generator: {
         level: 1,
